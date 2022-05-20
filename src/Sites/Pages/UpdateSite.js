@@ -170,7 +170,7 @@ const UpdateSite = (props) => {
       <Button inverse type="submit" disabled={!formState.formIsValid}>
         Save
       </Button>
-      <Button danger>Cancel</Button>
+      <Button danger to="/">Cancel</Button>
     </form>
   );
 };

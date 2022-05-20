@@ -58,6 +58,7 @@ const Input = (props) => {
         onChange={inputChangeHandler}
         onBlur={touchHandler}
         value={inputState.value}
+        autoComplete="off"
       />
     ) : (
       <textarea
