@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 import useWindowDimensions from "../../../hooks/window-dimension";
-import Avatar from "../Elements/Avatar";
+import Avatar from "../UIElements/Avatar";
 import NavLinks from "./NavLinks";
-import BackDrop from "../Elements/BackDrop";
-import SideDrawer from "../Elements/SideDrawer";
+import BackDrop from "../UIElements/BackDrop";
+import SideDrawer from "../UIElements/SideDrawer";
 
 import "./Navigation.css";
 
@@ -24,12 +25,14 @@ const Navigation = (props) => {
   return (
     <nav>
       <div className="logo">
-        <Avatar
-          image="https://i.imgur.com/GP7By3c.jpg"
-          height="50px"
-          width="50px"
-          click={avatarHandler}
-        ></Avatar>
+        <NavLink to="/">
+          <Avatar
+            image="https://i.imgur.com/GP7By3c.jpg"
+            height="50px"
+            width="50px"
+            click={avatarHandler}
+          ></Avatar>
+        </NavLink>
       </div>
       {width < 670 && navDrawerIsOpen ? (
         <BackDrop onClick={navDrawerCloseHandler} />

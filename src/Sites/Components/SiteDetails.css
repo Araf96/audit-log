@@ -1,0 +1,9 @@
+.site-details__actions {
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #ccc;
+  }
+  
+  .site-details__modal-content {
+    padding: 0;
+  }

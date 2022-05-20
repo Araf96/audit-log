@@ -9,9 +9,8 @@ const NavLinks = (props) => {
       <div className="nav-item">
         <NavLink
           to="/"
-          exact
           className="link"
-          activeClassName="active"
+          activeclassname="active"
           style={{ textDecoration: "none" }}
         >
           Home
@@ -19,19 +18,29 @@ const NavLinks = (props) => {
       </div>
       <div className="nav-item">
         <NavLink
+          to="/users"
           className="link"
-          to="/addhistory"
-          activeClassName="active"
+          activeclassname="active"
           style={{ textDecoration: "none" }}
         >
-          Add History
+          Users
+        </NavLink>
+      </div>
+      <div className="nav-item">
+        <NavLink
+          className="link"
+          to="/addsite"
+          activeclassname="active"
+          style={{ textDecoration: "none" }}
+        >
+          Add Site
         </NavLink>
       </div>
       <div className="nav-item">
         <NavLink
           to="/login"
           className="link"
-          activeClassName="active"
+          activeclassname="active"
           style={{ textDecoration: "none" }}
         >
           Logout
