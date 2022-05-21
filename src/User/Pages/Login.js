@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { NavLink } from "react-router-dom";
 
 import { useForm } from "../../hooks/form";
 import Input from "../../Shared/Components/ActionElements/Input";
@@ -7,10 +8,12 @@ import {
   VALIDATOR_EMAIL,
   VALIDATOR_REQUIRE,
 } from "../../Shared/Util/validator";
+import { AuthContext } from "../../Context/authCTX";
 
 import "./Auth.css";
 
 const Login = (props) => {
+  const auth = useContext(AuthContext);
   const [formState, inputHandler] = useForm(
     {
       email: { value: "", isValid: false },
@@ -19,9 +22,12 @@ const Login = (props) => {
     false
   );
 
-  const loginHandler = event =>{
+  const loginHandler = (event) => {
     event.preventDefault();
-  }
+    console.log(formState.inputs);
+    auth.login();
+    setTimeout(()=>{console.log("Inside login " + auth.isLoggedIn)},3000);
+  };
 
   return (
     <form className="auth-form" onSubmit={loginHandler}>
@@ -47,7 +53,13 @@ const Login = (props) => {
         validators={[VALIDATOR_REQUIRE()]}
         errorText="Password is required"
       />
-      <Button type="submit" disabled={!formState.formIsValid} to="/">Login</Button>
+      <Button type="submit" disabled={!formState.formIsValid}>
+        Login
+      </Button>
+      <p>
+        Don't have an account? <NavLink to="/signup">Click here</NavLink> to
+        register
+      </p>
     </form>
   );
 };
