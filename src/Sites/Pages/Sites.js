@@ -12,23 +12,21 @@ const Sites = (props) => {
       name: "Hospital site",
       region: "Dhaka, Bangladesh",
       description: "A place to build a hospital",
-      longitude: 100.0,
-      latitude: 100.0,
-      userid: 1,
+      coordinates: { longitude: 100.0, latitude: 100.0 },
+      createdBy: 1,
     },
     {
       id: 2,
       name: "Power plant site",
       region: "Barisal, Bangladesh",
       description: "A place to build a power plant",
-      longitude: 200.0,
-      latitude: 100.0,
-      userid: 2,
+      coordinates: { longitude: 200.0, latitude: 100.0 },
+      createdBy: 2,
     },
   ];
 
   if (userid) {
-    siteList = siteList.filter((site) => site.userid == userid);
+    siteList = siteList.filter((site) => site.createdBy == userid);
   }
 
   return <SiteList sites={siteList} />;

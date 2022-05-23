@@ -19,7 +19,7 @@ let siteList = [
     description: "A place to build a hospital",
     longitude: 100.0,
     latitude: 100.0,
-    userid: 1,
+    createdBy: 1,
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ let siteList = [
     description: "A place to build a power plant",
     longitude: 200.0,
     latitude: 100.0,
-    userid: 2,
+    createdBy: 2,
   },
 ];
 

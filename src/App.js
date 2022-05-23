@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,13 +20,28 @@ import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const login = useCallback(() => {
-    console.log("Inside login");
+  const [loggedUid, setLoggedUid] = useState(null);
+  const [uToken, setUToken] = useState(null);
+
+  const login = useCallback((uid, token) => {
     setIsLoggedIn(true);
+    setLoggedUid(uid);
+    setUToken(token);
+    localStorage.setItem('userInfo', JSON.stringify({id: uid, token}));
   });
   const logout = useCallback(() => {
     setIsLoggedIn(false);
+    setLoggedUid(null);
+    setUToken(null);
   });
+
+  useEffect(()=>{
+    const userData = JSON.parse(localStorage.getItem('userInfo'));
+
+    if(userData && userData.id && userData.token){
+      login(userData.id, userData.token);
+    }
+  },[]);
 
   let routes = (
     <Routes>
@@ -54,7 +69,7 @@ function App() {
   return (
     <React.Fragment>
       <AuthContext.Provider
-        value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+        value={{ isLoggedIn, loggedUid, uToken, login: login, logout: logout }}
       >
         <Router>
           <Navigation />

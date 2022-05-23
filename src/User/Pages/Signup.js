@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { CSpinner } from "@coreui/react";
 
 import { useForm } from "../../hooks/form";
+import { useModal } from "../../hooks/modal-hook";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH,
@@ -11,15 +13,29 @@ import {
 } from "../../Shared/Util/validator";
 import Input from "../../Shared/Components/ActionElements/Input";
 import Button from "../../Shared/Components/ActionElements/Button";
-import Modal from "../../Shared/Components/UIElements/Modal"
+import Modal from "../../Shared/Components/UIElements/Modal";
+import LoadingSpinner from "../../Shared/Components/ActionElements/LoadingSpinner";
 
 import "./Auth.css";
+import axios from "axios";
 
 const Signup = (props) => {
-  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  // const [modal, setModal] = useState({
+  //   isOpen: false,
+  //   message: "",
+  //   type: "",
+  // });
 
-  const passwordModalOpenHandler = ()=>setPasswordModalOpen(true);
-  const passwordModalCloseHandler = ()=>setPasswordModalOpen(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modal, modalOpenHandler, modalCloseHandler] = useModal();
+
+  // const modalOpenHandler = (text, type) =>{
+  //   console.log(type);
+  //   setModal({ isOpen: true, message: text, type: type });
+  // }
+    
+  // const modalCloseHandler = () =>
+  //   setModal({ isOpen: false, message: "", type: "" });
 
   const [formState, inputHandler] = useForm(
     {
@@ -32,7 +48,7 @@ const Signup = (props) => {
     false
   );
 
-  const signupHandler = (event) => {
+  const signupHandler = async (event) => {
     event.preventDefault();
     let passwordCheck = validate(
       {
@@ -42,20 +58,58 @@ const Signup = (props) => {
       [VALIDATOR_MATCH()]
     );
 
-    if(!passwordCheck){
-        passwordModalOpenHandler();
-        return;
+    if (!passwordCheck) {
+      modalOpenHandler("Password and confirm password didn't match", "ERROR");
+      return;
     }
-    console.log(formState.inputs);
+    try {
+      const body = {
+        firstName: formState.inputs.firstName.value,
+        lastName: formState.inputs.lastName.value,
+        email: formState.inputs.email.value,
+        password: formState.inputs.password.value,
+      };
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:3001/api/users/signup",
+        body
+      );
+      setIsLoading(false);
+      if(response.status==201){
+        modalOpenHandler("COngratulations! You've succesfully signed up. Please login to continue.", "SUCCESS");
+      }
+    } catch (e) {
+      var message = "";
+      if(!e.response.data){
+        message = e.message || "Something went wrong.";
+      }else{
+        message = e.response.data.message || "Something went wrong.";
+      }
+      setIsLoading(false);
+      modalOpenHandler(message, "ERROR");
+    }
   };
 
   return (
     <React.Fragment>
-      <Modal show={passwordModalOpen} header="Error" footer={
-          <Button danger onClick={passwordModalCloseHandler}>CLOSE</Button>
-      }>
-          <p>Password and confirm password didn't match</p>
+      <Modal
+        show={modal.isOpen}
+        header={modal.type == "ERROR" ? "ERROR" : "SUCCESS"}
+        footer={
+          modal.type == "ERROR" ? (
+            <Button danger onClick={modalCloseHandler}>
+              CLOSE
+            </Button>
+          ) : (
+            <Button to="/login">
+              LOGIN
+            </Button>
+          )
+        }
+      >
+        <p>{modal.message}</p>
       </Modal>
+      {isLoading && <LoadingSpinner asOverlay/>}
       <form className="auth-form" onSubmit={signupHandler}>
         <h2>Signup</h2>
         <hr />
@@ -112,7 +166,10 @@ const Signup = (props) => {
         <Button type="submit" disabled={!formState.formIsValid}>
           Signup
         </Button>
-        <p>Already have an account? <NavLink to="/login">Click here</NavLink> to login.</p>
+        <p>
+          Already have an account? <NavLink to="/login">Click here</NavLink> to
+          login.
+        </p>
       </form>
     </React.Fragment>
   );
