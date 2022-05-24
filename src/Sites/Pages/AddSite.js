@@ -68,11 +68,15 @@ const AddSite = (props) => {
       }
     }catch(e){
       var message = "";
-      if (!e.response.data) {
-        message = e.message || "Something went wrong.";
-      } else {
-        message = e.response.data.message || "Something went wrong.";
-      }
+        if (e.response) {
+          if (!e.response.data) {
+            message = e.message || "Something went wrong.";
+          } else {
+            message = e.response.data.message || "Something went wrong.";
+          }
+        } else {
+          message = "Something went wrong.";
+        }
       setIsLoading(false);
       modalOpenHandler(message, "ERROR");
     }
@@ -93,9 +97,12 @@ const AddSite = (props) => {
             <Button to="/">CLOSE</Button>
           )
         }
+        contentClass="site-details__modal-content"
+        footerClass="site-details__actions"
       >
         <p>{modal.message}</p>
       </Modal>
+      {isLoading && <LoadingSpinner asOverlay/>}
       <form className="site-form" onSubmit={formSubmitHandler}>
         <Input
           id="name"

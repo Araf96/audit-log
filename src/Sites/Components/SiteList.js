@@ -18,6 +18,7 @@ const SiteList = (props) => {
           description={site.description}
           latitude={site.latitude}
           longitude={site.longitude}
+          onDelete={props.onDelete}
         />
       ))}
     </ul>

@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { NavLink, Navigate } from "react-router-dom";
+import axios from "axios";
 
 import Modal from "../../Shared/Components/UIElements/Modal";
 import Button from "../../Shared/Components/ActionElements/Button";
+import LoadingSpinner from "../../Shared/Components/ActionElements/LoadingSpinner";
+import { useModal } from "../../hooks/modal-hook";
+import { AuthContext } from "../../Context/authCTX";
+
 
 const SiteDetails = (props) => {
+  const auth = useContext(AuthContext);
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+  const [modal, modalOpenHandler, modalCloseHandler] = useModal();
+  const [isLoading, setIsLoading] = useState(false);
 
   const detailOpenHandler = () => setShowDetails(true);
 
@@ -16,9 +24,33 @@ const SiteDetails = (props) => {
 
   const deleteSiteCloseHandler = () => setShowDeleteWarning(false);
 
-  const deleteSiteHandler = () =>{
+  const deleteSiteHandler = async () =>{
+    try{
+      setIsLoading(true);
+      const response = await axios.delete(`http://localhost:3001/api/sites/${props.id}`, {headers: {'x-auth': auth.uToken}});
+      if(response.status === 200){
+        modalOpenHandler("Site was deleted successfully", "SUCCESS");
+        props.onDelete(props.id);
+      }else{
+        throw new Error();
+      }
+      
+    }catch(e){
+      var message = "";
+      if (e.response) {
+        if (!e.response.data) {
+          message = e.message || "Something went wrong.";
+        } else {
+          message = e.response.data.message || "Something went wrong.";
+        }
+      } else {
+        message = "Something went wrong.";
+      }
+      setIsLoading(false);
+      modalOpenHandler(message, "ERROR");
+    }
+
     deleteSiteCloseHandler();
-    console.log("Deleting...");
   }
 
   const detailsModalFooter = (
@@ -70,6 +102,15 @@ const SiteDetails = (props) => {
         footerClass="site-details__actions"
       >
         <p>You're about to delete a site. Are you sure you want to proceed?</p>
+      </Modal>
+      <Modal
+        show={modal.isOpen}
+        header={modal.type == "ERROR" ? "ERROR" : "SUCCESS"}
+        footer={
+          <Button danger={modal.type == "ERROR" ? true: false} onClick={modalCloseHandler}>CLOSE</Button>
+        }
+      >
+        <p>{modal.message}</p>
       </Modal>
       <li>
         <div>

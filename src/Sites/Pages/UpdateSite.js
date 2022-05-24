@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 import Button from "../../Shared/Components/ActionElements/Button";
 import Input from "../../Shared/Components/ActionElements/Input";
@@ -8,33 +9,19 @@ import {
   VALIDATOR_MINLENGTH,
 } from "../../Shared/Util/validator";
 import { useForm } from "../../hooks/form";
+import Modal from "../../Shared/Components/UIElements/Modal";
+import LoadingSpinner from "../../Shared/Components/ActionElements/LoadingSpinner";
+import { useModal } from "../../hooks/modal-hook";
+import { AuthContext } from "../../Context/authCTX";
 
 import "./Sites.css";
 
-let siteList = [
-  {
-    id: 1,
-    name: "Hospital site",
-    region: "Dhaka, Bangladesh",
-    description: "A place to build a hospital",
-    longitude: 100.0,
-    latitude: 100.0,
-    createdBy: 1,
-  },
-  {
-    id: 2,
-    name: "Power plant site",
-    region: "Barisal, Bangladesh",
-    description: "A place to build a power plant",
-    longitude: 200.0,
-    latitude: 100.0,
-    createdBy: 2,
-  },
-];
-
 const UpdateSite = (props) => {
   const siteId = useParams().siteid;
+  const auth = useContext(AuthContext);
+  const [modal, modalOpenHandler, modalCloseHandler] = useModal();
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedSite, setSelectedSite] = useState(null);
 
   const [formState, inputHandler, updateFormData] = useForm(
     {
@@ -62,116 +49,180 @@ const UpdateSite = (props) => {
     false
   );
 
-  let selectedSite = siteList.find((site) => site.id == siteId);
-
   useEffect(() => {
-      if(selectedSite){
+    const sendRequest = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/sites/site/${siteId}`,
+          { headers: { "x-auth": auth.uToken } }
+        );
+        let site = response.data.site;
+        setSelectedSite(site);
+
         updateFormData(
-            {
-              name: {
-                value: selectedSite.name,
-                isValid: true,
-              },
-              region: {
-                value: selectedSite.region,
-                isValid: true,
-              },
-              description: {
-                value: selectedSite.description,
-                isValid: true,
-              },
-              latitude: {
-                value: selectedSite.latitude,
-                isValid: true,
-              },
-              longitude: {
-                value: selectedSite.longitude,
-                isValid: true,
-              },
+          {
+            name: {
+              value: site.name,
+              isValid: true,
             },
-            true
-          );
+            region: {
+              value: site.region,
+              isValid: true,
+            },
+            description: {
+              value: site.description,
+              isValid: true,
+            },
+            latitude: {
+              value: site.coordinates.lat,
+              isValid: true,
+            },
+            longitude: {
+              value: site.coordinates.lng,
+              isValid: true,
+            },
+          },
+          true
+        );
+
+        setIsLoading(false);
+      } catch (e) {
+        var message = "";
+        if (e.response) {
+          if (!e.response.data) {
+            message = e.message || "Something went wrong.";
+          } else {
+            message = e.response.data.message || "Something went wrong.";
+          }
+        } else {
+          message = "Something went wrong.";
+        }
+
+        setIsLoading(false);
+        modalOpenHandler(message, "ERROR");
       }
-    
-    setIsLoading(false);
-  }, [selectedSite, updateFormData]);
+    };
+    sendRequest();
+  }, [updateFormData]);
 
-  if (isLoading) {
-    return <h3 className="center">Loading...</h3>;
-  }
-
-  if (!selectedSite) {
-    return <h3 className="center">No site found.</h3>;
-  }
-
-  const formUpdateHandler = (event) => {
+  const formUpdateHandler = async (event) => {
     event.preventDefault();
-    console.log(formState);
+    const body = {
+      name: formState.inputs.name.value,
+      region: formState.inputs.region.value,
+      description: formState.inputs.description.value,
+    };
+    setIsLoading(true);
+    try {
+      const response = await axios.patch(
+        `http://localhost:3001/api/sites/${siteId}`,
+        body,
+        { headers: { "x-auth": auth.uToken } }
+      );
+      setIsLoading(false);
+      if (response.status == 200) {
+        modalOpenHandler("Site updated successfully.", "SUCCESS");
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      var message = "";
+      if (e.response) {
+        if (!e.response.data) {
+          message = e.message || "Something went wrong.";
+        } else {
+          message = e.response.data.message || "Something went wrong.";
+        }
+      } else {
+        message = "Something went wrong.";
+      }
+      setIsLoading(false);
+      modalOpenHandler(message, "ERROR");
+    }
   };
 
   return (
-    <form className="site-form" onSubmit={formUpdateHandler}>
-      <Input
-        id="name"
-        element="input"
-        type="text"
-        placeholder="Site name"
-        label="Name"
-        validators={[VALIDATOR_REQUIRE()]}
-        onInput={inputHandler}
-        errorText="Name is required"
-        value={formState.inputs.name.value}
-        isValid={formState.inputs.name.isValid}
-      />
-      <Input
-        id="region"
-        element="input"
-        type="text"
-        placeholder="Region"
-        label="Region"
-        validators={[VALIDATOR_REQUIRE()]}
-        onInput={inputHandler}
-        errorText="Region is required"
-        value={formState.inputs.region.value}
-        isValid={formState.inputs.region.isValid}
-      />
-      <Input
-        id="description"
-        placeholder="Write a description here"
-        label="Site Description"
-        validators={[VALIDATOR_REQUIRE(), VALIDATOR_MINLENGTH(5)]}
-        onInput={inputHandler}
-        errorText="Description must be at least 5 letters"
-        value={formState.inputs.description.value}
-        isValid={formState.inputs.description.isValid}
-      />
-      <Input
-        id="latitude"
-        element="input"
-        type="number"
-        placeholder="0.00"
-        label="Latitude"
-        validators={[]}
-        onInput={inputHandler}
-        value={formState.inputs.latitude.value}
-        isValid={formState.inputs.latitude.isValid}
-      />
-      <Input
-        id="longitude"
-        element="input"
-        type="number"
-        placeholder="0.00"
-        label="Longitude"
-        validators={[]}
-        onInput={inputHandler}
-        value={formState.inputs.longitude.value}
-        isValid={formState.inputs.longitude.isValid}
-      />
-      <Button inverse type="submit" disabled={!formState.formIsValid}>
-        Save
-      </Button>
-      <Button danger to="/">Cancel</Button>
-    </form>
+    <React.Fragment>
+      <Modal
+        show={modal.isOpen}
+        header={modal.type == "ERROR" ? "ERROR" : "SUCCESS"}
+        footer={
+          <Button danger={modal.type == "ERROR" ? true: false} onClick={modalCloseHandler}>CLOSE</Button>
+        }
+        contentClass="site-details__modal-content"
+        footerClass="site-details__actions"
+      >
+        <p>{modal.message}</p>
+      </Modal>
+      {isLoading && <LoadingSpinner asOverlay />}
+      {!isLoading && !selectedSite && <h3 className="center">No site found</h3>}
+      {selectedSite && (
+        <form className="site-form" onSubmit={formUpdateHandler}>
+          <Input
+            id="name"
+            element="input"
+            type="text"
+            placeholder="Site name"
+            label="Name"
+            validators={[VALIDATOR_REQUIRE()]}
+            onInput={inputHandler}
+            errorText="Name is required"
+            value={formState.inputs.name.value}
+            isValid={formState.inputs.name.isValid}
+          />
+          <Input
+            id="region"
+            element="input"
+            type="text"
+            placeholder="Region"
+            label="Region"
+            validators={[VALIDATOR_REQUIRE()]}
+            onInput={inputHandler}
+            errorText="Region is required"
+            value={formState.inputs.region.value}
+            isValid={formState.inputs.region.isValid}
+          />
+          <Input
+            id="description"
+            placeholder="Write a description here"
+            label="Site Description"
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MINLENGTH(5)]}
+            onInput={inputHandler}
+            errorText="Description must be at least 5 letters"
+            value={formState.inputs.description.value}
+            isValid={formState.inputs.description.isValid}
+          />
+          <Input
+            id="latitude"
+            element="input"
+            type="number"
+            placeholder="0.00"
+            label="Latitude"
+            validators={[]}
+            onInput={inputHandler}
+            value={formState.inputs.latitude.value}
+            isValid={formState.inputs.latitude.isValid}
+          />
+          <Input
+            id="longitude"
+            element="input"
+            type="number"
+            placeholder="0.00"
+            label="Longitude"
+            validators={[]}
+            onInput={inputHandler}
+            value={formState.inputs.longitude.value}
+            isValid={formState.inputs.longitude.isValid}
+          />
+          <Button inverse type="submit" disabled={!formState.formIsValid}>
+            Save
+          </Button>
+          <Button danger to="/">
+            Cancel
+          </Button>
+        </form>
+      )}
+    </React.Fragment>
   );
 };
 
