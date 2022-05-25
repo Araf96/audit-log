@@ -1,22 +1,35 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  Suspense,
+} from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-
-import { AuthContext } from "./Context/authCTX";
-import Site from "./Sites/Pages/Sites";
-import User from "./User/Pages/User";
-import AddSite from "./Sites/Pages/AddSite";
-import UpdateSite from "./Sites/Pages/UpdateSite";
 import Navigation from "./Shared/Components/Navigation/Navigation";
-import Login from "./User/Pages/Login";
-import Signup from "./User/Pages/Signup";
-import About from "./Extra/About";
-
+import { AuthContext } from "./Context/authCTX";
+// import Site from "./Sites/Pages/Sites";
+// import User from "./User/Pages/User";
+// import AddSite from "./Sites/Pages/AddSite";
+// import UpdateSite from "./Sites/Pages/UpdateSite";
+// import Login from "./User/Pages/Login";
+// import Signup from "./User/Pages/Signup";
+// import About from "./Extra/About";
 import "./App.css";
+import LoadingSpinner from "./Shared/Components/ActionElements/LoadingSpinner";
+
+const Site = React.lazy(() => import("./Sites/Pages/Sites"));
+const User = React.lazy(() => import("./User/Pages/User"));
+const AddSite = React.lazy(() => import("./Sites/Pages/AddSite"));
+const UpdateSite = React.lazy(() => import("./Sites/Pages/UpdateSite"));
+const Login = React.lazy(() => import("./User/Pages/Login"));
+const Signup = React.lazy(() => import("./User/Pages/Signup"));
+const About = React.lazy(() => import("./Extra/About"));
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -33,6 +46,7 @@ function App() {
     setIsLoggedIn(false);
     setLoggedUid(null);
     setUToken(null);
+    localStorage.removeItem("userInfo");
   });
 
   useEffect(() => {
@@ -56,7 +70,10 @@ function App() {
     routes = (
       <Routes>
         <Route path="/" element={<Site key="home-route" />}></Route>
-        <Route path="/sites/:userid" element={<Site key="usersite-route" />}></Route>
+        <Route
+          path="/sites/:userid"
+          element={<Site key="usersite-route" />}
+        ></Route>
         <Route path="/users" element={<User />}></Route>
         <Route path="/about" element={<About />}></Route>
         {/* <Route path="/:userid/sites" element={<Site />}></Route> */}
@@ -74,7 +91,9 @@ function App() {
       >
         <Router>
           <Navigation />
-          <main>{routes}</main>
+          <main>
+            <Suspense fallback={<div className="center"><LoadingSpinner asOverlay/></div>}>{routes}</Suspense>
+          </main>
         </Router>
       </AuthContext.Provider>
     </React.Fragment>

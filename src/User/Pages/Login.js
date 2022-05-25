@@ -54,7 +54,7 @@ const Login = (props) => {
       };
       setIsLoading(true);
       const response = await axios.post(
-        "http://localhost:3001/api/users/login",
+        `${process.env.REACT_APP_SERVER_URL}/users/login`,
         body
       );
       setIsLoading(false);

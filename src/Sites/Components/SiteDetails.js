@@ -23,9 +23,10 @@ const SiteDetails = (props) => {
   console.log(props);
 
   const detailOpenHandler = async () => {
+    setIsLoading(true);
     try {
       const logResponse = await axios.get(
-        `http://localhost:3001/api/logs/${props.id}`,
+        `${process.env.REACT_APP_SERVER_URL}/logs/${props.id}`,
         { headers: { "x-auth": auth.uToken } }
       );
       let tempSiteLogs = logResponse.data.logs;
@@ -58,7 +59,7 @@ const SiteDetails = (props) => {
     try {
       setIsLoading(true);
       const response = await axios.delete(
-        `http://localhost:3001/api/sites/${props.id}`,
+        `${process.env.REACT_APP_SERVER_URL}/sites/${props.id}`,
         { headers: { "x-auth": auth.uToken } }
       );
       if (response.status === 200) {

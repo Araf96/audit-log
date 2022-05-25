@@ -55,11 +55,11 @@ const UpdateSite = (props) => {
     const sendRequest = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/sites/site/${siteId}`,
+          `${process.env.REACT_APP_SERVER_URL}/sites/site/${siteId}`,
           { headers: { "x-auth": auth.uToken } }
         );
         const logResponse = await axios.get(
-          `http://localhost:3001/api/logs/${siteId}`,
+          `${process.env.REACT_APP_SERVER_URL}/logs/${siteId}`,
           { headers: { "x-auth": auth.uToken } }
         );
         let tempSite = response.data.site;
@@ -123,7 +123,7 @@ const UpdateSite = (props) => {
     setIsLoading(true);
     try {
       const response = await axios.patch(
-        `http://localhost:3001/api/sites/${siteId}`,
+        `${process.env.REACT_APP_SERVER_URL}/sites/${siteId}`,
         body,
         { headers: { "x-auth": auth.uToken } }
       );

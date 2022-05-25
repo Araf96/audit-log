@@ -71,12 +71,12 @@ const Signup = (props) => {
       };
       setIsLoading(true);
       const response = await axios.post(
-        "http://localhost:3001/api/users/signup",
+        `${process.env.REACT_APP_SERVER_URL}/users/signup`,
         body
       );
       setIsLoading(false);
       if(response.status==201){
-        modalOpenHandler("COngratulations! You've succesfully signed up. Please login to continue.", "SUCCESS");
+        modalOpenHandler("Congratulations! You've succesfully signed up. Please login to continue.", "SUCCESS");
       }
     } catch (e) {
       var message = "";

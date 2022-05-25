@@ -92,6 +92,7 @@
 
 .siteItem__detail{
   color: white;
+  cursor: pointer;
 }
 
 @media (max-width: 1600px) {

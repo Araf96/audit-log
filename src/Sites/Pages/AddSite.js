@@ -56,7 +56,7 @@ const AddSite = (props) => {
     setIsLoading(true);
     try{
       const response = await axios.post(
-        "http://localhost:3001/api/sites",
+        `${process.env.REACT_APP_SERVER_URL}/sites`,
         body,
         {headers: {'x-auth': auth.uToken}}
       );

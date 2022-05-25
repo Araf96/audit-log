@@ -17,7 +17,7 @@ const User = (props) => {
   const reqFunction = useCallback(async () => {
     setIsLoading(true);
     try {
-      var url = "http://localhost:3001/api/users";
+      var url = `${process.env.REACT_APP_SERVER_URL}/users`;
 
       const response = await axios.get(url, {
         headers: { "x-auth": auth.uToken },
