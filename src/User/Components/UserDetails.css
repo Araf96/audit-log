@@ -1,0 +1,49 @@
+.user-detail {
+  margin: 1rem;
+  width: calc(45% - 2rem);
+  min-width: 17.5rem;
+}
+
+.user-detail a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  padding: 1rem;
+  color: white;
+  background: grey;
+}
+
+.user-detail a:hover,
+.user-detail a:active {
+  background: #353434;
+}
+
+.user-detail__content {
+  padding: 0;
+}
+
+.user-detail__image {
+  width: 4rem;
+  height: 4rem;
+  margin-right: 1rem;
+}
+
+.user-detail__info h2 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: normal;
+  color: white;
+}
+
+.user-detail:hover h2,
+.user-detail:active h2,
+.user-detail:hover h3,
+.user-detail:active h3 {
+  color: radial-gradient(#50e7e7, #0f869d);
+}
+
+.user-detail__info h3 {
+  margin: 0;
+}

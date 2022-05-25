@@ -20,8 +20,9 @@ const Sites = (props) => {
   const reqFunction = useCallback(async () => {
     try {
       var url = "http://localhost:3001/api/sites";
-      if (userid) {
-        url = `http://localhost:3001/api/sites/${userid}`;
+      
+      if(userid){
+        var url = `http://localhost:3001/api/sites/${userid}`;
       }
 
       const response = await axios.get(url, {

@@ -27,7 +27,7 @@ function App() {
     setIsLoggedIn(true);
     setLoggedUid(uid);
     setUToken(token);
-    localStorage.setItem('userInfo', JSON.stringify({id: uid, token}));
+    localStorage.setItem("userInfo", JSON.stringify({ id: uid, token }));
   });
   const logout = useCallback(() => {
     setIsLoggedIn(false);
@@ -35,13 +35,13 @@ function App() {
     setUToken(null);
   });
 
-  useEffect(()=>{
-    const userData = JSON.parse(localStorage.getItem('userInfo'));
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userInfo"));
 
-    if(userData && userData.id && userData.token){
+    if (userData && userData.id && userData.token) {
       login(userData.id, userData.token);
     }
-  },[]);
+  }, []);
 
   let routes = (
     <Routes>
@@ -55,12 +55,13 @@ function App() {
   if (isLoggedIn) {
     routes = (
       <Routes>
-        <Route path="/" element={<Site />}></Route>
+        <Route path="/" element={<Site key="home-route" />}></Route>
+        <Route path="/sites/:userid" element={<Site key="usersite-route" />}></Route>
         <Route path="/users" element={<User />}></Route>
-        <Route path="/:userid/sites" element={<Site />}></Route>
+        <Route path="/about" element={<About />}></Route>
+        {/* <Route path="/:userid/sites" element={<Site />}></Route> */}
         <Route path="/addsite" element={<AddSite />}></Route>
         <Route path="/updateSite/:siteid" element={<UpdateSite />}></Route>
-        {/* <Route path="/logout" element={<Login />}></Route> */}
         <Route path="*" element={<Navigate to="/" />}></Route>
       </Routes>
     );

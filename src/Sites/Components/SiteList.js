@@ -16,8 +16,7 @@ const SiteList = (props) => {
           name={site.name}
           region={site.region}
           description={site.description}
-          latitude={site.latitude}
-          longitude={site.longitude}
+          coordinates={site.coordinates}
           onDelete={props.onDelete}
         />
       ))}

@@ -13,6 +13,7 @@ import Modal from "../../Shared/Components/UIElements/Modal";
 import LoadingSpinner from "../../Shared/Components/ActionElements/LoadingSpinner";
 import { useModal } from "../../hooks/modal-hook";
 import { AuthContext } from "../../Context/authCTX";
+import Log from "../../Logs/Pages/Log";
 
 import "./Sites.css";
 
@@ -22,6 +23,7 @@ const UpdateSite = (props) => {
   const [modal, modalOpenHandler, modalCloseHandler] = useModal();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSite, setSelectedSite] = useState(null);
+  const [siteLogs, setSiteLogs] = useState([]);
 
   const [formState, inputHandler, updateFormData] = useForm(
     {
@@ -56,29 +58,35 @@ const UpdateSite = (props) => {
           `http://localhost:3001/api/sites/site/${siteId}`,
           { headers: { "x-auth": auth.uToken } }
         );
-        let site = response.data.site;
-        setSelectedSite(site);
+        const logResponse = await axios.get(
+          `http://localhost:3001/api/logs/${siteId}`,
+          { headers: { "x-auth": auth.uToken } }
+        );
+        let tempSite = response.data.site;
+        let tempSiteLogs = logResponse.data.logs;
+        setSelectedSite(tempSite);
+        setSiteLogs(tempSiteLogs);
 
         updateFormData(
           {
             name: {
-              value: site.name,
+              value: tempSite.name,
               isValid: true,
             },
             region: {
-              value: site.region,
+              value: tempSite.region,
               isValid: true,
             },
             description: {
-              value: site.description,
+              value: tempSite.description,
               isValid: true,
             },
             latitude: {
-              value: site.coordinates.lat,
+              value: tempSite.coordinates.lat,
               isValid: true,
             },
             longitude: {
-              value: site.coordinates.lng,
+              value: tempSite.coordinates.lng,
               isValid: true,
             },
           },
@@ -220,6 +228,10 @@ const UpdateSite = (props) => {
           <Button danger to="/">
             Cancel
           </Button>
+          {siteLogs.length !==0 && <div>
+            <h3>Audit Log</h3>
+            <Log logs={siteLogs}/>
+          </div>}
         </form>
       )}
     </React.Fragment>
