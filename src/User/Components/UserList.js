@@ -5,7 +5,6 @@ import UserDetails from "./UserDetails";
 import "./UserList.css"
 
 const UserList = (props) => {
-  console.log(props.users);
   if (props.users.length == 0) {
     return <h2 className="center">No user found.</h2>;
   }

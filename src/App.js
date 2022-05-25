@@ -1,7 +1,6 @@
 import React, {
   useState,
   useCallback,
-  useContext,
   useEffect,
   Suspense,
 } from "react";
@@ -11,6 +10,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import axios from "axios";
+
 import Navigation from "./Shared/Components/Navigation/Navigation";
 import { AuthContext } from "./Context/authCTX";
 // import Site from "./Sites/Pages/Sites";
@@ -41,21 +42,31 @@ function App() {
     setLoggedUid(uid);
     setUToken(token);
     localStorage.setItem("userInfo", JSON.stringify({ id: uid, token }));
-  });
+  },[]);
   const logout = useCallback(() => {
     setIsLoggedIn(false);
     setLoggedUid(null);
     setUToken(null);
     localStorage.removeItem("userInfo");
-  });
+  },[]);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userInfo"));
 
     if (userData && userData.id && userData.token) {
-      login(userData.id, userData.token);
+      try{
+        const verify = async()=>{
+          const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/users/verify`,{headers:{'x-auth': userData.token}});
+          if(response.status===200){
+            login(userData.id, userData.token);
+          }
+        }
+        verify();
+      }catch(e){
+
+      }
     }
-  }, []);
+  }, [login]);
 
   let routes = (
     <Routes>
@@ -92,7 +103,15 @@ function App() {
         <Router>
           <Navigation />
           <main>
-            <Suspense fallback={<div className="center"><LoadingSpinner asOverlay/></div>}>{routes}</Suspense>
+            <Suspense
+              fallback={
+                <div className="center">
+                  <LoadingSpinner asOverlay />
+                </div>
+              }
+            >
+              {routes}
+            </Suspense>
           </main>
         </Router>
       </AuthContext.Provider>

@@ -8,7 +8,6 @@ export const useModal = () => {
   });
 
   const modalOpenHandler = useCallback((text, type) => {
-    console.log(type);
     setModalState({ isOpen: true, message: text, type: type });
   });
 

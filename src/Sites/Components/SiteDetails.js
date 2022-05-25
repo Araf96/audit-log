@@ -20,8 +20,6 @@ const SiteDetails = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [siteLogs, setSiteLogs] = useState([]);
 
-  console.log(props);
-
   const detailOpenHandler = async () => {
     setIsLoading(true);
     try {

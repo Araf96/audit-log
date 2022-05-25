@@ -20,22 +20,8 @@ import "./Auth.css";
 import axios from "axios";
 
 const Signup = (props) => {
-  // const [modal, setModal] = useState({
-  //   isOpen: false,
-  //   message: "",
-  //   type: "",
-  // });
-
   const [isLoading, setIsLoading] = useState(false);
   const [modal, modalOpenHandler, modalCloseHandler] = useModal();
-
-  // const modalOpenHandler = (text, type) =>{
-  //   console.log(type);
-  //   setModal({ isOpen: true, message: text, type: type });
-  // }
-    
-  // const modalCloseHandler = () =>
-  //   setModal({ isOpen: false, message: "", type: "" });
 
   const [formState, inputHandler] = useForm(
     {
