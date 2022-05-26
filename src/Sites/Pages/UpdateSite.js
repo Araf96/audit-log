@@ -210,6 +210,7 @@ const UpdateSite = (props) => {
             onInput={inputHandler}
             value={formState.inputs.latitude.value}
             isValid={formState.inputs.latitude.isValid}
+            disabled={true}
           />
           <Input
             id="longitude"
@@ -221,6 +222,7 @@ const UpdateSite = (props) => {
             onInput={inputHandler}
             value={formState.inputs.longitude.value}
             isValid={formState.inputs.longitude.isValid}
+            disabled={true}
           />
           <Button inverse type="submit" disabled={!formState.formIsValid}>
             Save

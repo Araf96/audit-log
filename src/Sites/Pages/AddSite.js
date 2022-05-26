@@ -32,15 +32,7 @@ const AddSite = (props) => {
       description: {
         value: "",
         isValid: false,
-      },
-      latitude: {
-        value: -200.0,
-        isValid: false,
-      },
-      longitude: {
-        value: -200.0,
-        isValid: false,
-      },
+      }
     },
     false
   );
@@ -132,7 +124,7 @@ const AddSite = (props) => {
           onInput={inputHandler}
           errorText="Description must be at least 5 letters"
         />
-        <Input
+        {/* <Input
           id="latitude"
           element="input"
           type="number"
@@ -149,7 +141,7 @@ const AddSite = (props) => {
           label="Longitude"
           validators={[]}
           onInput={inputHandler}
-        />
+        /> */}
         <Button type="submit" inverse disabled={!formState.formIsValid}>
           Save
         </Button>
