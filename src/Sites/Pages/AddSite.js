@@ -145,7 +145,7 @@ const AddSite = (props) => {
         <Button type="submit" inverse disabled={!formState.formIsValid}>
           Save
         </Button>
-        <Button danger>Cancel</Button>
+        <Button danger to="/">Cancel</Button>
       </form>
     </React.Fragment>
   );
